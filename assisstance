@@ -1,0 +1,85 @@
+import pyttsx3
+import speech_recognition as sr
+import datetime
+import webbrowser
+import wikipedia
+import os
+
+engine=pyttsx3.init('sapi5')
+voices=engine.getProperty('voices')
+#print(voices[1].id)
+engine.setProperty('voices',voices[1].id)
+
+def speak(audio):                       #enable assisstant to sreak
+    engine.say(audio)
+    engine.runAndWait()
+
+def WishMe():                           #welcome user 
+    hour=int(datetime.datetime.now().hour)
+    if hour >=0 and hour <12:
+        speak('Good Morning') 
+    elif hour >=12 and hour <18:
+        speak('Good Afternoon')
+    else:
+        speak('Good Evening')    
+
+    speak('hi, i am your asisstent! How can i help you')  
+
+
+
+def takeCommands():                      #take voice inputs from user 
+    r=sr.Recognizer()
+    with sr.Microphone() as source:
+        print('Listening...')
+        r.pause_threshold=1
+        audio=r.listen(source)
+
+    try:
+        print('Recognizing...')    
+        query=r.recognize_google(audio,language='en-in')
+        print('user said :',query)
+
+    except Exception as e:
+        #print(e)
+        print('Please,say that again ..') 
+        return 'None' 
+    return query      
+
+
+if __name__=='__main__':
+    WishMe()
+    while True:
+    #if 1:
+        query=takeCommands().lower()
+        #logic for tasks
+        if 'wikipedia' in query:
+            speak('searching wikipedia..')
+            query=query.replace("wikipedia","")
+            result=wikipedia.summary(query,sentences=2)
+            speak('According to Wikipedia')
+            print(result)
+            speak(result)
+        elif 'open youtube' in query:
+            webbrowser.open('youtube.com')   
+        elif 'open google' in query:
+            webbrowser.open('google.com')    
+        elif 'open hackerrank' in query:
+            webbrowser.open('hackerrank.com')    
+        elif 'songs' in query:
+            folder='C:\\Users\\sahil\\Music\\Songs'  
+            songs=os.listdir(folder)
+            os.startfile(os.path.join(folder,songs[0]))  
+        elif 'time' in query:
+            t=datetime.datetime.now().strftime('%H:%M:%S')
+            print('sir ,the time is:',t)
+            speak(f'sir , the time is {t}')
+        elif 'code' in query:
+            path='C:\\Users\\sahil\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe'  
+            speak('opening VS Code.')
+            os.startfile(path)
+        elif 'quit' in query:
+            exit()      
+          
+
+
+
